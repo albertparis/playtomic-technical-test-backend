@@ -3,6 +3,7 @@ package com.playtomic.tests.wallet.service;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
@@ -22,11 +23,12 @@ import java.net.URI;
 public class StripeService {
 
     @NonNull
-    private URI chargesUri;
+    private final URI chargesUri;
 
     @NonNull
-    private URI refundsUri;
+    private final URI refundsUri;
 
+    @Setter
     @NonNull
     private RestTemplate restTemplate;
 
@@ -61,7 +63,7 @@ public class StripeService {
      */
     public void refund(@NonNull String paymentId) throws StripeServiceException {
         // Object.class because we don't read the body here.
-        restTemplate.postForEntity(chargesUri.toString(), null, Object.class, paymentId);
+        restTemplate.postForEntity(refundsUri.toString(), null, Object.class, paymentId);
     }
 
     @AllArgsConstructor
