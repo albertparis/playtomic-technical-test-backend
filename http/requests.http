@@ -1,0 +1,16 @@
+@id = 1
+
+### Top-up wallet
+POST {{apiUrl}}/{{id}}/top-up
+Content-Type: application/json
+
+{
+  "credit_card": "4242424242424242",
+  "amount": 10
+}
+
+
+### Get wallet
+GET {{apiUrl}}/{{id}}
+
+
