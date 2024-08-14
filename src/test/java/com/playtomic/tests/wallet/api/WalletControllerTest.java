@@ -1,5 +1,6 @@
 package com.playtomic.tests.wallet.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.playtomic.tests.wallet.model.Wallet;
 import com.playtomic.tests.wallet.service.StripeServiceException;
 import com.playtomic.tests.wallet.service.WalletService;
@@ -28,6 +29,8 @@ class WalletControllerTest {
     @Mock
     private WalletService walletService;
 
+    private ObjectMapper objectMapper;
+
     @InjectMocks
     private WalletController walletController;
 
@@ -36,6 +39,8 @@ class WalletControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        objectMapper = new ObjectMapper();
+        walletController = new WalletController(walletService, objectMapper);
         mockMvc = MockMvcBuilders.standaloneSetup(walletController).build();
     }
 
@@ -50,7 +55,7 @@ class WalletControllerTest {
         mockMvc.perform(get("/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.balance").value(10));
+                .andExpect(jsonPath("$.balance").value(1000));
     }
 
     @Test
@@ -74,7 +79,7 @@ class WalletControllerTest {
                 .content("{\"credit_card\":\"4242424242424242\",\"amount\":10}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.balance").value(10));
+                .andExpect(jsonPath("$.balance").value(1000));
     }
 
     @Test

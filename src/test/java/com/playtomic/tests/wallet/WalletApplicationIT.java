@@ -2,7 +2,7 @@ package com.playtomic.tests.wallet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.playtomic.tests.wallet.dto.TopUpRequest;
+import com.playtomic.tests.wallet.dto.TopUpRequestDto;
 import com.playtomic.tests.wallet.model.Wallet;
 import com.playtomic.tests.wallet.repository.WalletRepository;
 import jakarta.transaction.Transactional;
@@ -50,9 +50,9 @@ public class WalletApplicationIT {
 		wallet.setBalance(BigDecimal.ZERO);
 		wallet = walletRepository.save(wallet);
 
-		TopUpRequest topUpRequest = new TopUpRequest();
-		topUpRequest.setCreditCard("4242424242424242");
-		topUpRequest.setAmount(BigDecimal.TEN);
+		TopUpRequestDto topUpRequestDto = new TopUpRequestDto();
+		topUpRequestDto.setCreditCard("4242424242424242");
+		topUpRequestDto.setAmount(BigDecimal.TEN);
 
 		stubFor(WireMock.post(urlEqualTo("/"))
 				.willReturn(aResponse()
@@ -62,9 +62,9 @@ public class WalletApplicationIT {
 
 		mockMvc.perform(post("/" + wallet.getId() + "/top-up")
 						.contentType("application/json")
-						.content(jacksonObjectMapper.writeValueAsString(topUpRequest)))
+						.content(jacksonObjectMapper.writeValueAsString(topUpRequestDto)))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.balance").value(10.00));
+				.andExpect(jsonPath("$.balance").value(1000));
 
 		Wallet updatedWallet = walletRepository.findById(wallet.getId()).orElseThrow();
 		assertEquals(1, updatedWallet.getTransactions().size());

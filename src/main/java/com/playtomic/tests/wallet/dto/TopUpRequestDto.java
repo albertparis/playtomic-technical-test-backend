@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 
 @Data
 @NoArgsConstructor
-public class TopUpRequest {
+public class TopUpRequestDto {
     @NonNull
     @JsonProperty("credit_card")
     @ValidCreditCard

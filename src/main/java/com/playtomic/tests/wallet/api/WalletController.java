@@ -1,6 +1,8 @@
 package com.playtomic.tests.wallet.api;
 
-import com.playtomic.tests.wallet.dto.TopUpRequest;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.playtomic.tests.wallet.dto.TopUpRequestDto;
+import com.playtomic.tests.wallet.dto.WalletDto;
 import com.playtomic.tests.wallet.model.Wallet;
 import com.playtomic.tests.wallet.service.StripeServiceException;
 import com.playtomic.tests.wallet.service.WalletService;
@@ -19,6 +21,7 @@ public class WalletController {
     private final Logger log = LoggerFactory.getLogger(WalletController.class);
 
     private final WalletService walletService;
+    private final ObjectMapper objectMapper;
 
     @RequestMapping("/")
     void log() {
@@ -26,16 +29,18 @@ public class WalletController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Wallet> getWallet(@PathVariable Long id) {
+    public ResponseEntity<WalletDto> getWallet(@PathVariable Long id) {
         Optional<Wallet> wallet = walletService.getWallet(id);
-        return wallet.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        wallet.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return wallet.map(w -> ResponseEntity.ok(objectMapper.convertValue(w, WalletDto.class)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping("/{id}/top-up")
-    public ResponseEntity<Wallet> topUpWallet(@PathVariable Long id, @Valid @RequestBody TopUpRequest topUpRequest) {
+    public ResponseEntity<WalletDto> topUpWallet(@PathVariable Long id, @Valid @RequestBody TopUpRequestDto topUpRequestDto) {
         try {
-            Wallet wallet = walletService.topUpWallet(id, topUpRequest.getCreditCard(), topUpRequest.getAmount());
-            return ResponseEntity.ok(wallet);
+            Wallet wallet = walletService.topUpWallet(id, topUpRequestDto.getCreditCard(), topUpRequestDto.getAmount());
+            return ResponseEntity.ok(objectMapper.convertValue(wallet, WalletDto.class));
         } catch (StripeServiceException e) {
             return ResponseEntity.status(422).body(null);
         }
