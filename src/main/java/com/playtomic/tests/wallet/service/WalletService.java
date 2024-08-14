@@ -6,6 +6,7 @@ import com.playtomic.tests.wallet.domain.model.Wallet;
 import com.playtomic.tests.wallet.domain.repository.WalletRepository;
 import com.playtomic.tests.wallet.dto.PaymentDto;
 import com.playtomic.tests.wallet.port.PaymentService;
+import jakarta.persistence.OptimisticLockException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +27,7 @@ public class WalletService {
     }
 
     @Transactional
-    public Wallet topUpWallet(Long id, String creditCardNumber, BigDecimal amount) throws PaymentServiceException {
+    public Wallet topUpWallet(Long id, String creditCardNumber, BigDecimal amount) throws PaymentServiceException, OptimisticLockException {
         Wallet wallet = walletRepository.findById(id).orElseGet(() -> {
             Wallet newWallet = new Wallet();
             newWallet.setId(id);

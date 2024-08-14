@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.playtomic.tests.wallet.port.exception.PaymentServiceException;
 import com.playtomic.tests.wallet.domain.model.Wallet;
 import com.playtomic.tests.wallet.service.WalletService;
+import jakarta.persistence.OptimisticLockException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -81,7 +82,7 @@ class WalletControllerTest {
     }
 
     @Test
-    void testTopUpWallet_StripeServiceException() throws Exception {
+    void testTopUpWallet_PaymentServiceException() throws Exception {
         when(walletService.topUpWallet(anyLong(), any(String.class), any(BigDecimal.class)))
                 .thenThrow(new PaymentServiceException());
 
@@ -89,5 +90,16 @@ class WalletControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"credit_card\":\"4242424242424242\",\"amount\":10}"))
                 .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    void testTopUpWallet_OptimisticLockException() throws Exception {
+        when(walletService.topUpWallet(anyLong(), any(String.class), any(BigDecimal.class)))
+                .thenThrow(new OptimisticLockException());
+
+        mockMvc.perform(post("/1/top-up")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"credit_card\":\"4242424242424242\",\"amount\":10}"))
+                .andExpect(status().isConflict());
     }
 }

@@ -6,6 +6,7 @@ import com.playtomic.tests.wallet.dto.TopUpRequestDto;
 import com.playtomic.tests.wallet.dto.WalletDto;
 import com.playtomic.tests.wallet.domain.model.Wallet;
 import com.playtomic.tests.wallet.service.WalletService;
+import jakarta.persistence.OptimisticLockException;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
@@ -43,6 +44,8 @@ public class WalletController {
             return ResponseEntity.ok(objectMapper.convertValue(wallet, WalletDto.class));
         } catch (PaymentServiceException e) {
             return ResponseEntity.status(422).body(null);
+        } catch (OptimisticLockException e) {
+            return ResponseEntity.status(409).body(null);
         }
     }
 }
