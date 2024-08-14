@@ -1,6 +1,10 @@
-package com.playtomic.tests.wallet.service;
+package com.playtomic.tests.wallet.infrastructure.client;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.playtomic.tests.wallet.dto.PaymentDto;
+import com.playtomic.tests.wallet.infrastructure.exception.StripeRestTemplateResponseErrorHandler;
+import com.playtomic.tests.wallet.infrastructure.exception.StripeServiceException;
+import com.playtomic.tests.wallet.port.PaymentService;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
@@ -20,7 +24,7 @@ import java.net.URI;
  * This dummy implementation throws an error when trying to charge less than 10€.
  */
 @Service
-public class StripeService {
+public class StripeService implements PaymentService {
 
     @NonNull
     private final URI chargesUri;
@@ -53,9 +57,9 @@ public class StripeService {
      *
      * @throws StripeServiceException
      */
-    public Payment charge(@NonNull String creditCardNumber, @NonNull BigDecimal amount) throws StripeServiceException {
+    public PaymentDto charge(@NonNull String creditCardNumber, @NonNull BigDecimal amount) throws StripeServiceException {
         ChargeRequest body = new ChargeRequest(creditCardNumber, amount);
-        return restTemplate.postForObject(chargesUri, body, Payment.class);
+        return restTemplate.postForObject(chargesUri, body, PaymentDto.class);
     }
 
     /**

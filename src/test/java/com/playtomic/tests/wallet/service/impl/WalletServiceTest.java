@@ -1,11 +1,12 @@
 package com.playtomic.tests.wallet.service.impl;
 
-import com.playtomic.tests.wallet.model.TransactionType;
-import com.playtomic.tests.wallet.model.Wallet;
-import com.playtomic.tests.wallet.repository.WalletRepository;
-import com.playtomic.tests.wallet.service.Payment;
-import com.playtomic.tests.wallet.service.StripeService;
-import com.playtomic.tests.wallet.service.StripeServiceException;
+import com.playtomic.tests.wallet.port.exception.PaymentServiceException;
+import com.playtomic.tests.wallet.domain.model.TransactionType;
+import com.playtomic.tests.wallet.domain.model.Wallet;
+import com.playtomic.tests.wallet.domain.repository.WalletRepository;
+import com.playtomic.tests.wallet.dto.PaymentDto;
+import com.playtomic.tests.wallet.infrastructure.client.StripeService;
+import com.playtomic.tests.wallet.infrastructure.exception.StripeServiceException;
 import com.playtomic.tests.wallet.service.WalletService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -56,7 +57,7 @@ class WalletServiceTest {
         wallet.setBalance(BigDecimal.ZERO);
 
         when(walletRepository.findById(1L)).thenReturn(Optional.of(wallet));
-        doAnswer(invocation -> new Payment("some-id")).when(stripeService).charge(anyString(), any(BigDecimal.class));
+        doAnswer(invocation -> new PaymentDto("some-id")).when(stripeService).charge(anyString(), any(BigDecimal.class));
         when(walletRepository.save(any(Wallet.class))).thenReturn(wallet);
 
         Wallet result = walletService.topUpWallet(1L, "1234567890123456", BigDecimal.TEN);
@@ -76,7 +77,7 @@ class WalletServiceTest {
     @Test
     void testTopUpWallet_WalletNotFound() throws StripeServiceException {
         when(walletRepository.findById(1L)).thenReturn(Optional.empty());
-        doAnswer(invocation -> new Payment("some-id")).when(stripeService).charge(anyString(), any(BigDecimal.class));
+        doAnswer(invocation -> new PaymentDto("some-id")).when(stripeService).charge(anyString(), any(BigDecimal.class));
         when(walletRepository.save(any(Wallet.class))).thenAnswer(invocation -> {
             Wallet walletToSave = invocation.getArgument(0);
             walletToSave.setId(1L);
@@ -109,7 +110,7 @@ class WalletServiceTest {
         when(walletRepository.findById(1L)).thenReturn(Optional.of(wallet));
         doThrow(new StripeServiceException()).when(stripeService).charge(anyString(), any(BigDecimal.class));
 
-        assertThrows(StripeServiceException.class, () -> walletService.topUpWallet(1L, "1234567890123456", BigDecimal.TEN));
+        assertThrows(PaymentServiceException.class, () -> walletService.topUpWallet(1L, "1234567890123456", BigDecimal.TEN));
 
         verify(walletRepository, never()).save(any(Wallet.class));
     }

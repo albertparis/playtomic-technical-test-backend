@@ -1,8 +1,11 @@
 package com.playtomic.tests.wallet.service;
 
-import com.playtomic.tests.wallet.model.TransactionType;
-import com.playtomic.tests.wallet.model.Wallet;
-import com.playtomic.tests.wallet.repository.WalletRepository;
+import com.playtomic.tests.wallet.port.exception.PaymentServiceException;
+import com.playtomic.tests.wallet.domain.model.TransactionType;
+import com.playtomic.tests.wallet.domain.model.Wallet;
+import com.playtomic.tests.wallet.domain.repository.WalletRepository;
+import com.playtomic.tests.wallet.dto.PaymentDto;
+import com.playtomic.tests.wallet.port.PaymentService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,21 +19,21 @@ public class WalletService {
 
     private final WalletRepository walletRepository;
 
-    private final StripeService stripeService;
+    private final PaymentService paymentService;
 
     public Optional<Wallet> getWallet(Long id) {
         return walletRepository.findById(id);
     }
 
     @Transactional
-    public Wallet topUpWallet(Long id, String creditCardNumber, BigDecimal amount) throws StripeServiceException {
+    public Wallet topUpWallet(Long id, String creditCardNumber, BigDecimal amount) throws PaymentServiceException {
         Wallet wallet = walletRepository.findById(id).orElseGet(() -> {
             Wallet newWallet = new Wallet();
             newWallet.setId(id);
             newWallet.setBalance(BigDecimal.ZERO);
             return newWallet;
         });
-        Payment response = stripeService.charge(creditCardNumber, amount);
+        PaymentDto response = paymentService.charge(creditCardNumber, amount);
         wallet.setBalance(wallet.getBalance().add(amount));
 
         // Add transaction using Wallet's method

@@ -1,10 +1,10 @@
-package com.playtomic.tests.wallet.api;
+package com.playtomic.tests.wallet.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.playtomic.tests.wallet.port.exception.PaymentServiceException;
 import com.playtomic.tests.wallet.dto.TopUpRequestDto;
 import com.playtomic.tests.wallet.dto.WalletDto;
-import com.playtomic.tests.wallet.model.Wallet;
-import com.playtomic.tests.wallet.service.StripeServiceException;
+import com.playtomic.tests.wallet.domain.model.Wallet;
 import com.playtomic.tests.wallet.service.WalletService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -41,7 +41,7 @@ public class WalletController {
         try {
             Wallet wallet = walletService.topUpWallet(id, topUpRequestDto.getCreditCard(), topUpRequestDto.getAmount());
             return ResponseEntity.ok(objectMapper.convertValue(wallet, WalletDto.class));
-        } catch (StripeServiceException e) {
+        } catch (PaymentServiceException e) {
             return ResponseEntity.status(422).body(null);
         }
     }

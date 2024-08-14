@@ -1,4 +1,4 @@
-package com.playtomic.tests.wallet.model;
+package com.playtomic.tests.wallet.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;

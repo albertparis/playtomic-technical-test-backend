@@ -1,8 +1,8 @@
-package com.playtomic.tests.wallet.api;
+package com.playtomic.tests.wallet.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.playtomic.tests.wallet.model.Wallet;
-import com.playtomic.tests.wallet.service.StripeServiceException;
+import com.playtomic.tests.wallet.port.exception.PaymentServiceException;
+import com.playtomic.tests.wallet.domain.model.Wallet;
 import com.playtomic.tests.wallet.service.WalletService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,8 +29,6 @@ class WalletControllerTest {
     @Mock
     private WalletService walletService;
 
-    private ObjectMapper objectMapper;
-
     @InjectMocks
     private WalletController walletController;
 
@@ -39,7 +37,7 @@ class WalletControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = new ObjectMapper();
         walletController = new WalletController(walletService, objectMapper);
         mockMvc = MockMvcBuilders.standaloneSetup(walletController).build();
     }
@@ -85,7 +83,7 @@ class WalletControllerTest {
     @Test
     void testTopUpWallet_StripeServiceException() throws Exception {
         when(walletService.topUpWallet(anyLong(), any(String.class), any(BigDecimal.class)))
-                .thenThrow(new StripeServiceException());
+                .thenThrow(new PaymentServiceException());
 
         mockMvc.perform(post("/1/top-up")
                 .contentType(MediaType.APPLICATION_JSON)
