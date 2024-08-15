@@ -40,7 +40,7 @@ public class WalletController {
     @PostMapping("/{id}/top-up")
     public ResponseEntity<WalletDto> topUpWallet(@PathVariable Long id, @Valid @RequestBody TopUpRequestDto topUpRequestDto) {
         try {
-            Wallet wallet = walletService.topUpWallet(id, topUpRequestDto.getCreditCard(), topUpRequestDto.getAmount());
+            Wallet wallet = walletService.topUpWallet(id, topUpRequestDto.creditCard(), topUpRequestDto.amount());
             return ResponseEntity.ok(objectMapper.convertValue(wallet, WalletDto.class));
         } catch (PaymentServiceException e) {
             return ResponseEntity.status(422).body(null);

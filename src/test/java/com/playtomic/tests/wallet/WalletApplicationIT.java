@@ -50,9 +50,7 @@ public class WalletApplicationIT {
 		wallet.setBalance(BigDecimal.ZERO);
 		wallet = walletRepository.save(wallet);
 
-		TopUpRequestDto topUpRequestDto = new TopUpRequestDto();
-		topUpRequestDto.setCreditCard("4242424242424242");
-		topUpRequestDto.setAmount(BigDecimal.TEN);
+		TopUpRequestDto topUpRequestDto = new TopUpRequestDto("4242424242424242", BigDecimal.TEN);
 
 		stubFor(WireMock.post(urlEqualTo("/"))
 				.willReturn(aResponse()

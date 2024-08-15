@@ -5,7 +5,7 @@ POST {{apiUrl}}/{{id}}/top-up
 Content-Type: application/json
 
 {
-  "credit_card": "4242424242424242",
+  "creditCard": "4242424242424242",
   "amount": 10
 }
 

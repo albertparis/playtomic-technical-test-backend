@@ -19,7 +19,7 @@ public class Wallet {
     private BigDecimal balance;
     @Version
     @JsonIgnore
-    private Long version;
+    private Long version = 0L;
 
     @OneToMany(mappedBy = "wallet", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference

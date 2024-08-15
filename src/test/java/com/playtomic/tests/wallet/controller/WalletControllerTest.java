@@ -75,7 +75,7 @@ class WalletControllerTest {
 
         mockMvc.perform(post("/1/top-up")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"credit_card\":\"4242424242424242\",\"amount\":10}"))
+                .content("{\"creditCard\":\"4242424242424242\",\"amount\":10}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.balance").value(1000));
@@ -88,7 +88,7 @@ class WalletControllerTest {
 
         mockMvc.perform(post("/1/top-up")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"credit_card\":\"4242424242424242\",\"amount\":10}"))
+                .content("{\"creditCard\":\"4242424242424242\",\"amount\":10}"))
                 .andExpect(status().isUnprocessableEntity());
     }
 
@@ -99,7 +99,7 @@ class WalletControllerTest {
 
         mockMvc.perform(post("/1/top-up")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"credit_card\":\"4242424242424242\",\"amount\":10}"))
+                        .content("{\"creditCard\":\"4242424242424242\",\"amount\":10}"))
                 .andExpect(status().isConflict());
     }
 }
