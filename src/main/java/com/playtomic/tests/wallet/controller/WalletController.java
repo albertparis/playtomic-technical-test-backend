@@ -1,17 +1,15 @@
 package com.playtomic.tests.wallet.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.playtomic.tests.wallet.infrastructure.exception.StripeAmountTooSmallException;
-import com.playtomic.tests.wallet.port.exception.PaymentServiceException;
+import com.playtomic.tests.wallet.domain.model.Wallet;
 import com.playtomic.tests.wallet.dto.TopUpRequestDto;
 import com.playtomic.tests.wallet.dto.WalletDto;
-import com.playtomic.tests.wallet.domain.model.Wallet;
+import com.playtomic.tests.wallet.infrastructure.exception.StripeAmountTooSmallException;
+import com.playtomic.tests.wallet.port.exception.PaymentServiceException;
 import com.playtomic.tests.wallet.service.WalletService;
 import jakarta.persistence.OptimisticLockException;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,15 +18,10 @@ import java.util.Optional;
 @RestController
 @AllArgsConstructor
 public class WalletController {
-    private final Logger log = LoggerFactory.getLogger(WalletController.class);
 
     private final WalletService walletService;
     private final ObjectMapper objectMapper;
 
-    @RequestMapping("/")
-    void log() {
-        log.info("Logging from /");
-    }
 
     @GetMapping("/{id}")
     public ResponseEntity<WalletDto> getWallet(@PathVariable Long id) {
