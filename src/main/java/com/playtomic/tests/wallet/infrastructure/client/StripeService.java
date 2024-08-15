@@ -1,8 +1,13 @@
-package com.playtomic.tests.wallet.service;
+package com.playtomic.tests.wallet.infrastructure.client;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.playtomic.tests.wallet.dto.PaymentDto;
+import com.playtomic.tests.wallet.infrastructure.exception.StripeRestTemplateResponseErrorHandler;
+import com.playtomic.tests.wallet.infrastructure.exception.StripeServiceException;
+import com.playtomic.tests.wallet.port.PaymentService;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
@@ -19,14 +24,15 @@ import java.net.URI;
  * This dummy implementation throws an error when trying to charge less than 10€.
  */
 @Service
-public class StripeService {
+public class StripeService implements PaymentService {
 
     @NonNull
-    private URI chargesUri;
+    private final URI chargesUri;
 
     @NonNull
-    private URI refundsUri;
+    private final URI refundsUri;
 
+    @Setter
     @NonNull
     private RestTemplate restTemplate;
 
@@ -51,9 +57,9 @@ public class StripeService {
      *
      * @throws StripeServiceException
      */
-    public Payment charge(@NonNull String creditCardNumber, @NonNull BigDecimal amount) throws StripeServiceException {
+    public PaymentDto charge(@NonNull String creditCardNumber, @NonNull BigDecimal amount) throws StripeServiceException {
         ChargeRequest body = new ChargeRequest(creditCardNumber, amount);
-        return restTemplate.postForObject(chargesUri, body, Payment.class);
+        return restTemplate.postForObject(chargesUri, body, PaymentDto.class);
     }
 
     /**
@@ -61,7 +67,7 @@ public class StripeService {
      */
     public void refund(@NonNull String paymentId) throws StripeServiceException {
         // Object.class because we don't read the body here.
-        restTemplate.postForEntity(chargesUri.toString(), null, Object.class, paymentId);
+        restTemplate.postForEntity(refundsUri.toString(), null, Object.class, paymentId);
     }
 
     @AllArgsConstructor

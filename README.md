@@ -31,3 +31,53 @@ Consider that this service must work in a microservices environment in high avai
 You can spend as much time as you need but we think that 4 hours is enough to show [the requirements of this job.](OFFER.md)
 You don't have to document your code, but you can write down anything you want to explain or anything you have skipped.
 You don't need to write tests for everything, but we would like to see different types of tests.
+
+# Challenge solution
+
+## Assumptions
+Given that this will be a high availability service, I anticipate the need for an external database,
+rather than the included H2 DB, which is typically used for easy development.
+
+In such cases, I would normally set up the service to use the H2 DB for tests, while integrating an external database
+like PostgreSQL for development, using Docker, along with the necessary migrations.
+
+## Installation
+1. **Clone the repository**:
+    ```sh
+    git clone
+    ```
+
+2. **Build the project using Maven**:
+    ```sh
+    mvn clean install
+    ```
+
+3. **Run the application**:
+    ```sh
+    mvn spring-boot:run
+    ```
+   
+## Usage
+### Example Endpoints
+
+- **Top-Up Wallet**: `POST /{id}/top-up`
+- **Get Wallet**: `GET /{id}`
+
+You can either go to `https://technical-test-backend.fly.dev/swagger-ui.html` or `http://localhost:8090/swagger-ui.html`
+to access the swagger docs or use the following examples:
+
+### Top-up wallet
+```http
+POST {{apiUrl}}/{{id}}/top-up
+Content-Type: application/json
+
+{
+"creditCard": "4242424242424242",
+"amount": 1000
+}
+```
+
+### Get wallet
+```http
+GET {{apiUrl}}/{{id}}
+```

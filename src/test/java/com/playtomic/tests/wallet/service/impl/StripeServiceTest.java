@@ -1,16 +1,21 @@
 package com.playtomic.tests.wallet.service.impl;
 
 
-import com.playtomic.tests.wallet.service.StripeAmountTooSmallException;
-import com.playtomic.tests.wallet.service.StripeServiceException;
-import com.playtomic.tests.wallet.service.StripeService;
-
+import com.playtomic.tests.wallet.infrastructure.exception.StripeAmountTooSmallException;
+import com.playtomic.tests.wallet.infrastructure.client.StripeService;
+import com.playtomic.tests.wallet.infrastructure.exception.StripeServiceException;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.net.URI;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 
 /**
  * This test is failing with the current implementation.
@@ -19,18 +24,28 @@ import java.net.URI;
  */
 public class StripeServiceTest {
 
-    URI testUri = URI.create("http://how-would-you-test-me.localhost");
-    StripeService s = new StripeService(testUri, testUri, new RestTemplateBuilder());
+    private StripeService s;
+    private RestTemplate restTemplate;
 
-    @Test
-    public void test_exception() {
-        Assertions.assertThrows(StripeAmountTooSmallException.class, () -> {
-            s.charge("4242 4242 4242 4242", new BigDecimal(5));
-        });
+    @BeforeEach
+    public void setUp() {
+        restTemplate = Mockito.mock(RestTemplate.class);
+        URI testUri = URI.create("http://how-would-you-test-me.localhost");
+        s = new StripeService(testUri, testUri, new RestTemplateBuilder());
+        s.setRestTemplate(restTemplate);
     }
 
     @Test
-    public void test_ok() throws StripeServiceException {
+    public void testChargeException() {
+        doThrow(new StripeAmountTooSmallException())
+                .when(restTemplate).postForObject(any(URI.class), any(Object.class), any(Class.class));
+
+        Assertions.assertThrows(StripeAmountTooSmallException.class, () ->
+                s.charge("4242 4242 4242 4242", new BigDecimal(5)));
+    }
+
+    @Test
+    public void testChargeOk() throws StripeServiceException {
         s.charge("4242 4242 4242 4242", new BigDecimal(15));
     }
 }
