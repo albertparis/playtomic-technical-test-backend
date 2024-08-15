@@ -1,6 +1,7 @@
 package com.playtomic.tests.wallet.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.playtomic.tests.wallet.infrastructure.exception.StripeAmountTooSmallException;
 import com.playtomic.tests.wallet.port.exception.PaymentServiceException;
 import com.playtomic.tests.wallet.dto.TopUpRequestDto;
 import com.playtomic.tests.wallet.dto.WalletDto;
@@ -38,14 +39,16 @@ public class WalletController {
     }
 
     @PostMapping("/{id}/top-up")
-    public ResponseEntity<WalletDto> topUpWallet(@PathVariable Long id, @Valid @RequestBody TopUpRequestDto topUpRequestDto) {
+    public ResponseEntity<?> topUpWallet(@PathVariable Long id, @Valid @RequestBody TopUpRequestDto topUpRequestDto) {
         try {
-            Wallet wallet = walletService.topUpWallet(id, topUpRequestDto.creditCard(), topUpRequestDto.amount());
+            Wallet wallet = walletService.topUpWallet(id, topUpRequestDto.creditCard(), topUpRequestDto.getAmountFromMinorUnits());
             return ResponseEntity.ok(objectMapper.convertValue(wallet, WalletDto.class));
+        } catch (StripeAmountTooSmallException e) {
+            return ResponseEntity.status(422).body("Amount is too small");
         } catch (PaymentServiceException e) {
-            return ResponseEntity.status(422).body(null);
+            return ResponseEntity.status(422).body("Payment service error");
         } catch (OptimisticLockException e) {
-            return ResponseEntity.status(409).body(null);
+            return ResponseEntity.status(409).body("Too many requests");
         }
     }
 }

@@ -2,9 +2,9 @@ package com.playtomic.tests.wallet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.playtomic.tests.wallet.dto.TopUpRequestDto;
 import com.playtomic.tests.wallet.domain.model.Wallet;
 import com.playtomic.tests.wallet.domain.repository.WalletRepository;
+import com.playtomic.tests.wallet.dto.TopUpRequestDto;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,7 +50,7 @@ public class WalletApplicationIT {
 		wallet.setBalance(BigDecimal.ZERO);
 		wallet = walletRepository.save(wallet);
 
-		TopUpRequestDto topUpRequestDto = new TopUpRequestDto("4242424242424242", BigDecimal.TEN);
+		TopUpRequestDto topUpRequestDto = new TopUpRequestDto("4242424242424242", 1000);
 
 		stubFor(WireMock.post(urlEqualTo("/"))
 				.willReturn(aResponse()
